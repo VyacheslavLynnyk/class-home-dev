@@ -7,7 +7,7 @@ class Router
     
     protected $action;
 
-    public $params;
+    protected $params;
 
 
     public function __construct()
@@ -17,13 +17,14 @@ class Router
 
     public function route()
     {
-        $uri = trim(str_ireplace(REL_URL, '', $_SERVER['REQUEST_URI']), '/');
-        $uri_path = explode('/', $uri);
-        print_r($uri_path);
+        $uri = rtrim(str_ireplace(REL_URL, '', $_SERVER['REQUEST_URI']), '/');                        
+        $patern = '#\/([A-Za-z0-9\-\.\{\}]+)#i';
+        preg_match_all($patern, $uri, $uri_out, PREG_PATTERN_ORDER);
+        $uri_path = $uri_out[1];                 
+        // print_r($uri_path);
         $this->controller = isset($uri_path[0]) ? array_shift($uri_path) : null;
-        $this->action = sizeof($uri_path) ? array_shift($uri_path) : null;
-        $this->params = sizeof($uri_path) ? $uri_path : null;
-
+        $this->action = isset($uri_path[0]) ? array_shift($uri_path) : null;
+        $this->params = isset($uri_path[0]) ? $uri_path : null;
     }
 
     public function getController()
@@ -33,7 +34,7 @@ class Router
 
     public function getAction()
     {
-        return $this->controller;
+        return $this->action;
     }
 
     public function getParam($key = null)
@@ -41,7 +42,7 @@ class Router
         if (isset($key)) {
             return $this->params[$key];
         }
-        return isset($params[0]) ? array_shift($this->params) : null;
+        return isset($this->params[0]) ? array_shift($this->params) : null;
     }
 
     public function getAllParams()

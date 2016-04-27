@@ -7,8 +7,7 @@ class View
         ob_start();
         extract($data);
         include ROOT_DIR.'/view/'.$template.'.html';
-        $res = ob_get_contents();
-        ob_end_clean();
+        $res = ob_get_clean();        
         return $res;
     }
 }
